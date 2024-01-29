@@ -1,10 +1,10 @@
 resource "aws_security_group" "Jenkins-sg" {
   name        = "Jenkins-Security Group"
-  description = "Open 22,443,80,8080,9000,9100,9090,3000"
+  description = "Open 22,443,80,8080,9000"
 
   # Define a single ingress rule to allow traffic on all specified ports
   ingress = [
-    for port in [22, 80, 443, 8080, 9000,9100,9090,3000] : {
+    for port in [22, 80, 443, 8080, 9000, 3000] : {
       description      = "TLS from VPC"
       from_port        = port
       to_port          = port
@@ -31,26 +31,14 @@ resource "aws_security_group" "Jenkins-sg" {
 
 
 resource "aws_instance" "web" {
-  ami                    = "ami-0c7217cdde317cfec"
-  instance_type          = "t2.large"
-  key_name               = "my key"
+  ami                    = "ami-03f4878755434977f"
+  instance_type          = "t2.medium"
+  key_name               = "prasad"
   vpc_security_group_ids = [aws_security_group.Jenkins-sg.id]
   user_data              = templatefile("./install_jenkins.sh", {})
 
   tags = {
     Name = "amazon clone"
-  }
-  root_block_device {
-    volume_size = 30
-  }
-}
-resource "aws_instance" "web2" {
-  ami                    = "ami-0c7217cdde317cfec"
-  instance_type          = "t2.medium"
-  key_name               = "my key"
-  vpc_security_group_ids = [aws_security_group.Jenkins-sg.id]
-  tags = {
-    Name = "Monitering via grafana"
   }
   root_block_device {
     volume_size = 30
